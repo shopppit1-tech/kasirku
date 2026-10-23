@@ -12,8 +12,9 @@ SETUP:
 3. Tekan “Buat akun”, masukkan email dan password, lalu konfirmasi email dari inbox.
 4. Kembali ke website, masuk dengan email/password, lalu isi nama toko. Alamat, nomor telepon, dan nama pemilik bersifat opsional.
 5. Setelah masuk, tambahkan produk dan uji transaksi.
-6. Saat menambahkan produk, barcode Code 128 dibuat otomatis dan dapat diubah. Setelah produk disimpan, tekan “Cetak label” untuk mencetak barcode produk.
-7. Untuk transaksi, tekan “Scan” di Kasir dan izinkan kamera, atau fokuskan kolom pencarian lalu scan memakai scanner USB/Bluetooth. Produk yang cocok akan tampil dan otomatis masuk ke keranjang.
+6. Tambahkan foto acuan pada setiap produk melalui menu Produk.
+7. Untuk mengenali produk dari foto, tekan “📷 Foto” di Kasir, arahkan kamera ke kemasan, lalu ambil foto. Nama, harga, dan stok kandidat paling mirip akan ditampilkan; cocokkan produk lalu tekan “Pilih” untuk menambahkannya ke keranjang. Pencocokan foto berjalan di perangkat dan memerlukan koneksi internet untuk memuat model. Fitur ini menggunakan foto acuan, jadi hasil perlu diperiksa untuk produk dengan kemasan serupa.
+8. Pemindai barcode tetap tersedia melalui tombol “Barcode” atau scanner USB/Bluetooth pada kolom pencarian.
 
 PENGGUNA KASIR:
 Untuk menambahkan kasir, buat akun Auth untuk email kasir, lalu buat profile role `cashier` dengan store_id toko yang sama. Jangan pernah memakai service_role/secret key di frontend. Publishable key di HTML aman hanya selama kebijakan RLS tetap aktif.

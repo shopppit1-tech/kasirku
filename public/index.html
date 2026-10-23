@@ -19,8 +19,8 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 /* Isi dua nilai ini dari Supabase Project Settings > API. Publishable/anon key aman di frontend hanya jika RLS benar. */
-const SUPABASE_URL='GANTI_DENGAN_PROJECT_URL';
-const SUPABASE_ANON_KEY='GANTI_DENGAN_PUBLISHABLE_KEY';
+const SUPABASE_URL='https://gejiwsnldqdebhybxxap.supabase.co';
+const SUPABASE_ANON_KEY='sb_publishable_P3r-ve6tC0Qh6DPnYFB6Kw_56AfiYok';
 let sb=null,user=null,profile=null,store={},products=[],transactions=[],stockHistory=[],cart={},realtimeChannel=null;
 const $=id=>document.getElementById(id),money=n=>'Rp'+Math.round(Number(n)||0).toLocaleString('id-ID'),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const dkey=d=>{let x=new Date(d);return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0')},dlabel=d=>new Date(d).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});

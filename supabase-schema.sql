@@ -154,6 +154,34 @@ grant execute on function public.add_stock(uuid,integer,text) to authenticated;
 revoke execute on function public.create_sale(jsonb) from public, anon;
 revoke execute on function public.add_stock(uuid,integer,text) from public, anon;
 
+-- Pendaftaran owner dari aplikasi web: hanya user login tanpa profil yang bisa membuat toko.
+create or replace function public.create_owner_store(
+ p_store_name text,
+ p_address text default '',
+ p_phone text default '',
+ p_display_name text default ''
+)
+returns uuid
+language plpgsql
+security definer
+set search_path=public,pg_temp
+as $$
+declare
+ v_user uuid:=auth.uid();
+ v_store uuid;
+begin
+ if v_user is null then raise exception 'Silakan masuk untuk menyiapkan toko'; end if;
+ if nullif(btrim(coalesce(p_store_name,'')),'') is null then raise exception 'Nama toko wajib diisi'; end if;
+ if exists(select 1 from public.profiles where id=v_user) then raise exception 'Akun ini sudah memiliki profil toko'; end if;
+ insert into public.store_settings(store_name,address,phone)
+ values(btrim(p_store_name),btrim(coalesce(p_address,'')),btrim(coalesce(p_phone,''))) returning id into v_store;
+ insert into public.profiles(id,store_id,display_name,role,active)
+ values(v_user,v_store,coalesce(nullif(btrim(coalesce(p_display_name,'')),''),'Pemilik'),'owner',true);
+ return v_store;
+end $$;
+revoke execute on function public.create_owner_store(text,text,text,text) from public, anon;
+grant execute on function public.create_owner_store(text,text,text,text) to authenticated;
+
 -- Aktifkan Realtime untuk tabel yang dipantau aplikasi.
 do $$ begin
   alter publication supabase_realtime add table public.products;
@@ -166,12 +194,6 @@ exception when duplicate_object then null;
 when undefined_object then null;
 end $$;
 
--- SETUP PERTAMA:
--- 1. Buat user di Authentication > Users.
--- 2. Jalankan SQL ini untuk membuat toko dan profile owner, ganti EMAIL_OWNER dan nama toko.
---    insert into public.store_settings(store_name,address,phone)
---    values('Nama Toko','Alamat Toko','08xxxx') returning id;
--- 3. Salin UUID hasilnya, lalu jalankan:
---    insert into public.profiles(id,store_id,display_name,role)
---    values((select id from auth.users where email='EMAIL_OWNER'), 'UUID_STORE_DARI_LANGKAH_2', 'Nama Pemilik','owner');
--- Buat akun kasir lewat Authentication > Users, lalu masukkan profil role cashier dengan store_id yang sama.
+-- Owner mendaftar melalui web, mengonfirmasi email, lalu mengisi data toko.
+-- Aplikasi memanggil create_owner_store untuk membuat store_settings dan profile owner.
+-- Untuk menambahkan kasir: buat akun Auth, lalu buat profile role cashier pada store_id toko terkait.

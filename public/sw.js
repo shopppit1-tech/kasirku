@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kasirku-shell-v3';
+const CACHE_NAME = 'kasirku-shell-v4';
 const BASE = self.registration.scope;
 const SHELL = ['./', './index.html', './manifest.json', './icons/kasirku-192.png', './icons/kasirku-512.png', './icons/kasirku-maskable-512.png'].map(path => new URL(path, BASE).href);
 self.addEventListener('install', event => {

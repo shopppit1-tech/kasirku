@@ -12,6 +12,7 @@ SETUP:
 3. Tekan “Buat akun”, masukkan email dan password, lalu konfirmasi email dari inbox.
 4. Kembali ke website, masuk dengan email/password, lalu isi nama toko. Alamat, nomor telepon, dan nama pemilik bersifat opsional.
 5. Setelah masuk, tambahkan produk dan uji transaksi.
+6. Untuk mencari produk, tekan “Scan” di Kasir atau Produk dan izinkan kamera. Scanner barcode USB/Bluetooth juga bisa dipakai: fokuskan kolom pencarian, scan barcode, lalu tekan Enter.
 
 PENGGUNA KASIR:
 Untuk menambahkan kasir, buat akun Auth untuk email kasir, lalu buat profile role `cashier` dengan store_id toko yang sama. Jangan pernah memakai service_role/secret key di frontend. Publishable key di HTML aman hanya selama kebijakan RLS tetap aktif.

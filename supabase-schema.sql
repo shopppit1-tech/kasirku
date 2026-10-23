@@ -58,11 +58,15 @@ create table if not exists public.stock_history(
 );
 
 create or replace function public.current_store_id()
-returns uuid language sql stable security definer set search_path=public
+returns uuid language sql stable security definer set search_path=public,pg_temp
 as $$ select store_id from public.profiles where id=auth.uid() and active=true limit 1 $$;
 create or replace function public.is_store_owner()
-returns boolean language sql stable security definer set search_path=public
+returns boolean language sql stable security definer set search_path=public,pg_temp
 as $$ select exists(select 1 from public.profiles where id=auth.uid() and active=true and role='owner') $$;
+revoke execute on function public.current_store_id() from public, anon;
+revoke execute on function public.is_store_owner() from public, anon;
+grant execute on function public.current_store_id() to authenticated;
+grant execute on function public.is_store_owner() to authenticated;
 
 alter table public.store_settings enable row level security;
 alter table public.profiles enable row level security;
@@ -99,7 +103,7 @@ create policy "store stock read" on public.stock_history for select to authentic
 
 -- Transaksi dan stok dijalankan di fungsi atomik, supaya dua kasir tidak menjual stok yang sama.
 create or replace function public.create_sale(sale jsonb)
-returns uuid language plpgsql security invoker set search_path=public
+returns uuid language plpgsql security definer set search_path=public,pg_temp
 as $$
 declare v_store uuid:=public.current_store_id(); v_tx uuid; v_receipt text; v_sub numeric(14,2):=0; v_disc numeric(14,2); v_total numeric(14,2); v_paid numeric(14,2); v_method text; v_status text; it jsonb; p public.products%rowtype; q int; v_change numeric(14,2);
 begin
@@ -133,7 +137,7 @@ begin
 end $$;
 
 create or replace function public.add_stock(p_product_id uuid,p_qty integer,p_note text default '')
-returns void language plpgsql security invoker set search_path=public
+returns void language plpgsql security definer set search_path=public,pg_temp
 as $$
 declare v_store uuid:=public.current_store_id(); p public.products%rowtype;
 begin
@@ -147,6 +151,8 @@ end $$;
 
 grant execute on function public.create_sale(jsonb) to authenticated;
 grant execute on function public.add_stock(uuid,integer,text) to authenticated;
+revoke execute on function public.create_sale(jsonb) from public, anon;
+revoke execute on function public.add_stock(uuid,integer,text) from public, anon;
 
 -- Aktifkan Realtime untuk tabel yang dipantau aplikasi.
 do $$ begin

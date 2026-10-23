@@ -24,10 +24,12 @@ create table if not exists public.products(
  price numeric(14,2) not null default 0 check(price>=0),
  cost numeric(14,2) not null default 0 check(cost>=0),
  stock integer not null default 0 check(stock>=0),
+ image_path text,
  active boolean not null default true,
  created_at timestamptz not null default now(), updated_at timestamptz not null default now()
 );
 create unique index if not exists products_store_code_unique on public.products(store_id,code) where code is not null and code<>'';
+alter table public.products add column if not exists image_path text;
 create table if not exists public.transactions(
  id uuid primary key default gen_random_uuid(),
  store_id uuid not null references public.store_settings(id) on delete cascade,
@@ -197,3 +199,18 @@ end $$;
 -- Owner mendaftar melalui web, mengonfirmasi email, lalu mengisi data toko.
 -- Aplikasi memanggil create_owner_store untuk membuat store_settings dan profile owner.
 -- Untuk menambahkan kasir: buat akun Auth, lalu buat profile role cashier pada store_id toko terkait.
+
+-- Foto produk disimpan di bucket publik agar dapat ditampilkan dari katalog dan kasir.
+-- Hak unggah/hapus dibatasi ke folder store_id pengguna yang sedang login.
+insert into storage.buckets(id,name,public,file_size_limit,allowed_mime_types)
+values('product-images','product-images',false,5242880,array['image/jpeg','image/png'])
+on conflict(id) do update set public=excluded.public,file_size_limit=excluded.file_size_limit,allowed_mime_types=excluded.allowed_mime_types;
+drop policy if exists "KasirKu product images read" on storage.objects;
+create policy "KasirKu product images read" on storage.objects for select to authenticated
+using(bucket_id='product-images' and (storage.foldername(name))[1]=public.current_store_id()::text);
+drop policy if exists "KasirKu product images upload" on storage.objects;
+create policy "KasirKu product images upload" on storage.objects for insert to authenticated
+with check(bucket_id='product-images' and (storage.foldername(name))[1]=public.current_store_id()::text);
+drop policy if exists "KasirKu product images delete" on storage.objects;
+create policy "KasirKu product images delete" on storage.objects for delete to authenticated
+using(bucket_id='product-images' and (storage.foldername(name))[1]=public.current_store_id()::text);

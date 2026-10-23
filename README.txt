@@ -14,7 +14,7 @@ SETUP:
 5. Setelah masuk, tambahkan produk dan uji transaksi.
 6. Tambahkan foto acuan pada setiap produk melalui menu Produk.
 7. Untuk mengenali produk dari foto, tekan “📷 Foto” di Kasir, arahkan kamera ke kemasan, lalu ambil foto. Nama, harga, dan stok kandidat paling mirip akan ditampilkan; cocokkan produk lalu tekan “Pilih” untuk menambahkannya ke keranjang. Pencocokan foto berjalan di perangkat dan memerlukan koneksi internet untuk memuat model. Fitur ini menggunakan foto acuan, jadi hasil perlu diperiksa untuk produk dengan kemasan serupa.
-8. Pemindai barcode tetap tersedia melalui tombol “Barcode” atau scanner USB/Bluetooth pada kolom pencarian.
+8. Untuk transaksi lebih cepat, pemindai barcode USB/Bluetooth bisa langsung dipakai pada kolom Kasir; setelah kode cocok, nama, harga, qty, dan stok tampil, item ditambahkan, lalu kolom siap untuk scan berikutnya. Nominal tunai cepat muncul otomatis sesuai total.
 
 PENGGUNA KASIR:
 Untuk menambahkan kasir, buat akun Auth untuk email kasir, lalu buat profile role `cashier` dengan store_id toko yang sama. Jangan pernah memakai service_role/secret key di frontend. Publishable key di HTML aman hanya selama kebijakan RLS tetap aktif.
